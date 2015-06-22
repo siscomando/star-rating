@@ -75,9 +75,7 @@
 
         // calculate init value
         function getStarredNumber() {
-
           return Math.ceil( self.votesSum / self.votes ) -1 ;
-
         }
 
         starredNumber = getStarredNumber();
@@ -144,6 +142,10 @@
 
             evt = new CustomEvent('rate');
             self.dispatchEvent(evt);
+
+            // to back control to timeline
+            var scTimeline = document.querySelector('sc-timeline');
+            scTimeline.$.coreList.focus();            
 
             return false;
           }, false);
