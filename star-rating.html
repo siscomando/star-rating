@@ -59,23 +59,37 @@
         /**
         * List of de `a` elements.
         */
-        stars: []
+        stars: [],
+        /**
+        * Initial value to back when mouseleave
+        *
+        */
+        starred: null
       },
       ready: function() {
         this._makeStars();
         this._addAtributtes();
         this.changeStatus(this._getIndex());
-        var starredLoaded = this._getIndex();
         this.addEventListener('mouseleave', function(){
           // TODO: over leave to back initial score
           if (this.readOnly) {
             return false;
           }
-          this.changeStatus(starredLoaded); // Initialized status.
+          // if continue null is because not passed by scoreChanged
+          if (this.starred === null) {
+            this.changeStatus(-1); // Initialized status.
+          } else {
+            this.changeStatus(this.starred);
+          }
+
         }, false);         
       },
       scoreChanged: function() {
-        this.changeStatus(this._getIndex());       
+        this.changeStatus(this._getIndex()); 
+
+        if (this.starred === null) {
+          this.starred = this._getIndex();
+        }        
       },
       /**
       * Creates the `a` elements and update stars propertie. Each star has your
