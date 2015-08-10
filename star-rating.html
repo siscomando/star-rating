@@ -8,13 +8,15 @@
   <template>
     <div id="starRating">
     </div>
-    <core-ajax 
+    <core-ajax
       id="rateAjax"
       url="{{url}}"
       response="{{response}}"
       contentType="application/json"
       handleAs="json"
       method="POST"
+      headers="{{ headerRequest() }}"
+      contentType="application/json"
       >
     </core-ajax>
     <style>
@@ -82,18 +84,22 @@
             this.changeStatus(this.starred);
           }
 
-        }, false);         
+        }, false);
+
+        // Workaround to back control to timeline
+        var scTimeline = document.querySelector('sc-timeline');
+        scTimeline.$.coreList.focus();
       },
       scoreChanged: function() {
-        this.changeStatus(this._getIndex()); 
+        this.changeStatus(this._getIndex());
 
         if (this.starred === null) {
           this.starred = this._getIndex();
-        }        
+        }
       },
       /**
       * Creates the `a` elements and update stars propertie. Each star has your
-      * own link and events associated. 
+      * own link and events associated.
       */
       _makeStars: function() {
         var a;
@@ -111,7 +117,7 @@
         return Math.ceil(this.score / this.votes) -1;
       },
       /**
-      * Makes a loop in all stars and adds class 'star' and/or 'check' to 
+      * Makes a loop in all stars and adds class 'star' and/or 'check' to
       * change appearance status to each stars.
       */
       changeStatus: function(index) {
@@ -127,7 +133,7 @@
         }
       },
       /**
-      * Adds specifics attributes to some behaviors, as click, leave, etc. 
+      * Adds specifics attributes to some behaviors, as click, leave, etc.
       * to each star.
       */
       _addAtributtes: function() {
@@ -148,7 +154,7 @@
             ev.preventDefault();
             var evt;
             if (self.readOnly) {
-              return false; // no changes is allowed 
+              return false; // no changes is allowed
             }
             // score thats will send to backend.
             self._score = parseInt(this.getAttribute('index')) + 1;
@@ -178,7 +184,14 @@
         data['score'] = score;
         ajax.body = JSON.stringify(data);
         ajax.go();
-      }      
+      },
+      headerRequest: function(payload) {
+        // TODO: if Account is not exits.
+        var accountData = JSON.parse(window.localStorage.getItem("Account"));
+        var token = accountData.message.token;
+        var b64Token = btoa(token + ":");
+        return JSON.stringify({"Authorization": "Basic " + b64Token});
+      }    
     });
   </script>
 
